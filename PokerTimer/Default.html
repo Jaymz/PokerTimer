@@ -1,0 +1,199 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen" />
+    <link href="css/pokertimer.css" rel="stylesheet" />
+
+    <link href='http://fonts.googleapis.com/css?family=Geostar+Fill' rel='stylesheet' type='text/css' />
+
+    <script src="js/jquery-1.9.1.min.js"></script>
+    <script src="js/jquery.runner-min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/wTimer.js"></script>
+    <script src="js/jquery.easing.1.3.js"></script>
+
+    <title>Poker Timer</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="span3">
+                <input type="number" id="timerValue" />
+                <input type="submit" value="Start" id="start" />
+            </div>
+            <div class="span9">
+                <div id="runner" style="font-family: 'Geostar Fill', cursive; font-size: 72px;"></div>
+                <div id="timerST" class="numbers"></div>
+                <div id="timerSU" class="numbers"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="span3">
+                <div>
+                    <input type="text" id="newPlayerName" />
+                    <input type="button" value="Add Player" id="addPlayer" />
+                </div>
+            </div>
+            <div class="span4" id="players">
+            </div>
+            <div class="span5" id="rounds">
+            </div>
+        </div>
+        <div class="row">
+            <div class="span3">
+                <input type="button" id="reset" value="Reset" />
+            </div>
+        </div>
+    </div>
+
+    <div id="timer" style="display: none;"></div>
+
+    <div id="temp" style="float: left;"></div>
+
+    <script type="text/javascript">
+        var i = 0;
+
+        var timer = new wTimer({
+            fps: 1,
+            run: function () {
+                //var time = $('#timer').html();
+
+                //var info = $('#timer').runner('info');
+                //$('#temp').html(info);
+
+                //$('#timerST').css({ 'background-position-y': (i - 1 * 11) + '%;' }).stop().animate({
+                //    'background-position-y': '+11%'
+                //}, 500);
+
+                $('#timerSU').stop().animate({
+                    'background-position-y': (i * 11) + '%'
+                }, 500, 'easeOutBounce');
+
+                if (++i > 9) i = 0;
+            }
+        });
+
+        $(document).ready(function () {
+            timer.start();
+
+            $('#timer').runner({
+                countdown: true,
+                startAt: 60000,
+                stopAt: 0,
+                milliseconds: false,
+                interval: 1000,
+                autostart: true
+            });
+        });
+    </script>
+
+
+    <script type="text/javascript">
+        var startValue;
+        var tournament;
+
+        $(document).ready(function () {
+            if (localStorage) {
+                if (localStorage.getItem('tournament') != null) {
+                    tournament = JSON.parse(localStorage.getItem('tournament'));
+                } else {
+                    resetTournament();
+                }
+            } else {
+                $('#players').html('This browser does not support local storage.');
+            }
+
+            listPlayers();
+            listRounds();
+            $('#timerValue').val(startValue);
+
+            $('#runner').runner({
+                autostart: true,
+                countdown: true,
+                startAt: startValue,
+                stopAt: 0,
+                milliseconds: false
+            });
+
+            $('#start').click(function () {
+                $('#runner').runner('stop');
+                localStorage.setItem('timerValue', $('#timerValue').val());
+                startValue = localStorage.getItem('timerValue');
+                $('#runner').runner({
+                    autostart: true,
+                    countdown: true,
+                    startAt: startValue,
+                    stopAt: 0,
+                    milliseconds: false
+                });
+            });
+
+            $('#addPlayer').click(function () {
+                tournament.players.push({ id: tournament.players.length, name: $('#newPlayerName').val() });
+                localStorage.setItem('tournament', JSON.stringify(tournament));
+                listPlayers();
+            });
+
+            $('#reset').click(resetTournament);
+        });
+
+        function listPlayers() {
+            $('#players').html('<ul>');
+            tournament.players.forEach(function (player) {
+                $('#players').append('<li>' + player.name + '<input type="button" id="player_' + player.id + '" value="x" /></li>');
+                $('#player_' + player.id).click(function () {
+                    removePlayer(player);
+                });
+            });
+            $('#players').append('</ul>');
+        }
+
+        function listRounds() {
+            $('#rounds').html('<ul>');
+            tournament.rounds.forEach(function (round) {
+                $('#rounds').append('<li>' + round.blindLevel / 2 + '/' + round.blindLevel + ': ' + round.duration + ' <input type="button" id="round_' + round.id + '" value="x" /></li>');
+                $('#round_' + round.id).click(function () {
+                    removeRound(round);
+                });
+            });
+            $('#rounds').append('</li>');
+        }
+
+        function removePlayer(player) {
+            var tempList = [];
+            for (var i = 0; i < tournament.players.length; i++) {
+                if (tournament.players[i] !== player) {
+                    tempList.push(tournament.players[i]);
+                }
+            }
+            tournament.players = tempList;
+            localStorage.setItem('tournament', JSON.stringify(tournament));
+            listPlayers();
+        }
+
+        function removeRound(round) {
+            var tempList = [];
+            for (var i = 0; i < tournament.rounds.length; i++) {
+                if (tournament.rounds[i] !== round) {
+                    tempList.push(tournament.rounds[i]);
+                }
+            }
+            tournament.rounds = tempList;
+            localStorage.setItem('tournament', JSON.stringify(tournament));
+            listRounds();
+        }
+
+        function resetTournament() {
+            tournament = {
+                players: [{ id: 0, name: "James" }, { id: 1, name: "Keir" }, { id: 2, name: "Mike" }, { id: 3, name: "Darren" }, { id: 4, name: "Kev" }],
+                rounds: [{ id: 0, blindLevel: 20, duration: 30 }, { id: 1, blindLevel: 40, duration: 30 }],
+                currentRound: 0
+            };
+            localStorage.setItem('tournament', JSON.stringify(tournament));
+            listPlayers();
+            listRounds();
+        }
+    </script>
+</body>
+</html>
