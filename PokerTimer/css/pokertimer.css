@@ -1,6 +1,34 @@
-﻿.numbers {
-    width: 150px;
-    height: 275px;
-    background-image: url(../img/numbers.jpg);
+﻿body {
+    background-color: #040404;
+    color: #DEDEDE;
+}
+
+input[type=text] {
+    background-color: #3D3D3D;
+    color: #DEDEDE;
+    border-color: #2D2D2D;
+}
+
+.numbers {
+    width: 55px;
+    height: 68px;
+    background-image: url(../img/numbers.png);
     float: left;
+    background-repeat: repeat-y;
+    background-position-y: 0%;
+}
+
+.seperator {
+    width: 14px;
+    height: 56px;
+    background-image: url(../img/seperator.png);
+    float: left;
+    margin-top: 14px;
+}
+
+.main-row {
+    height: 705px;
+    background-image: url(../img/table.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
 }

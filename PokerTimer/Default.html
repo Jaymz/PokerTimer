@@ -12,6 +12,7 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/wTimer.js"></script>
     <script src="js/jquery.easing.1.3.js"></script>
+    <script src="js/bgpos.js"></script>
 
     <title>Poker Timer</title>
 </head>
@@ -22,11 +23,7 @@
                 <input type="number" id="timerValue" />
                 <input type="submit" value="Start" id="start" />
             </div>
-            <div class="span9">
-                <div id="runner" style="font-family: 'Geostar Fill', cursive; font-size: 72px;"></div>
-                <div id="timerST" class="numbers"></div>
-                <div id="timerSU" class="numbers"></div>
-            </div>
+            
         </div>
         <div class="row">
             <div class="span3">
@@ -45,6 +42,19 @@
                 <input type="button" id="reset" value="Reset" />
             </div>
         </div>
+        <div class="row main-row">
+            <div class="span5">
+                
+            </div>
+            <div class="span7" style="padding-top: 300px;">
+                <!--<div id="runner" style="font-family: 'Geostar Fill', cursive; font-size: 72px;"></div>-->
+                <div id="timerMT" class="numbers"></div>
+                <div id="timerMU" class="numbers"></div>
+                <div class="seperator"></div>
+                <div id="timerST" class="numbers"></div>
+                <div id="timerSU" class="numbers"></div>
+            </div>
+        </div>
     </div>
 
     <div id="timer" style="display: none;"></div>
@@ -52,39 +62,31 @@
     <div id="temp" style="float: left;"></div>
 
     <script type="text/javascript">
-        var i = 0;
+        var isu = 0;
+        var ist = 0;
+        var imu = 0;
+        var imt = 0;
 
-        var timer = new wTimer({
-            fps: 1,
-            run: function () {
-                //var time = $('#timer').html();
-
-                //var info = $('#timer').runner('info');
-                //$('#temp').html(info);
-
-                //$('#timerST').css({ 'background-position-y': (i - 1 * 11) + '%;' }).stop().animate({
-                //    'background-position-y': '+11%'
-                //}, 500);
-
-                $('#timerSU').stop().animate({
-                    'background-position-y': (i * 11) + '%'
+        function animateTimer() {
+            $('#timerSU').css({backgroundPositionY: ((isu + 1) * 10.9) + '%'}).stop().animate({
+                backgroundPositionY: (isu * 10.9) + '%'
+            }, 500, 'easeOutBounce');
+            
+            if (--isu < 0) {
+                isu = 9;
+                $('#timerST').css({ backgroundPositionY: ((ist + 1) * 10.9) + '%' }).stop().animate({
+                    backgroundPositionY: (ist * 10.9) + '%'
                 }, 500, 'easeOutBounce');
 
-                if (++i > 9) i = 0;
+                if (--ist < 0) {
+                    ist = 5;
+                }
             }
-        });
+        }
+
+        setInterval(animateTimer, 1000);
 
         $(document).ready(function () {
-            timer.start();
-
-            $('#timer').runner({
-                countdown: true,
-                startAt: 60000,
-                stopAt: 0,
-                milliseconds: false,
-                interval: 1000,
-                autostart: true
-            });
         });
     </script>
 
@@ -107,14 +109,6 @@
             listPlayers();
             listRounds();
             $('#timerValue').val(startValue);
-
-            $('#runner').runner({
-                autostart: true,
-                countdown: true,
-                startAt: startValue,
-                stopAt: 0,
-                milliseconds: false
-            });
 
             $('#start').click(function () {
                 $('#runner').runner('stop');

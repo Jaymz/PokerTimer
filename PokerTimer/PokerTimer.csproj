@@ -65,7 +65,10 @@
     <Content Include="Default.html" />
     <Content Include="img\glyphicons-halflings-white.png" />
     <Content Include="img\glyphicons-halflings.png" />
-    <Content Include="img\numbers.jpg" />
+    <Content Include="img\numbers.png" />
+    <Content Include="img\seperator.png" />
+    <Content Include="img\table.jpg" />
+    <Content Include="js\bgpos.js" />
     <Content Include="js\bootstrap.js" />
     <Content Include="js\bootstrap.min.js" />
     <Content Include="js\jquery-1.9.1.js" />
